@@ -1,12 +1,12 @@
 [package]
 name = "rand_core_compat"
-version = "0.0.0"
+version = "0.1.0"
 authors = ["Tobias Bucher <tobiasbucher5991@gmail.com>"]
 edition = "2021"
 rust-version = "1.63"
 description = "A compatibility layer for different versions of rand_core"
 repository = "https://github.com/tbu-/rand_core_compat"
-license = "MIT or Apache-2.0"
+license = "MIT OR Apache-2.0"
 keywords = ["rand", "random", "compat", "compatibility", "no_std"]
 categories = ["no-std"]
 
