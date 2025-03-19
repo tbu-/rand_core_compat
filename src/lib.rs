@@ -23,9 +23,15 @@ pub mod error {
     use core::num::NonZeroU32;
 
     /// Error code when we couldn't extract an error code from the original error.
-    pub const UNKNOWN: NonZeroU32 = NonZeroU32::new(3222222222).unwrap();
+    pub const UNKNOWN: NonZeroU32 = match NonZeroU32::new(3222222222) {
+        Some(n) => n,
+        None => unreachable!(),
+    };
     /// Error code when the original error code was 0.
-    pub const OS_ERROR_0: NonZeroU32 = NonZeroU32::new(3222222223).unwrap();
+    pub const OS_ERROR_0: NonZeroU32 = match NonZeroU32::new(3222222223) {
+        Some(n) => n,
+        None => unreachable!(),
+    };
 }
 
 #[cfg(not(any(
