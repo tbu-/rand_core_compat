@@ -15,6 +15,10 @@ pub extern crate rand_core_0_6;
 #[cfg(feature = "rand_core_0_9")]
 pub extern crate rand_core_0_9;
 
+/// `rand_core 0.10` (corresponding to `rand 0.10`).
+#[cfg(feature = "rand_core_0_10")]
+pub extern crate rand_core_0_10;
+
 pub use compat::*;
 
 /// Custom error codes used when compiled without `std` support.
@@ -38,10 +42,11 @@ pub mod error {
     feature = "rand_core_0_5",
     feature = "rand_core_0_6",
     feature = "rand_core_0_9",
+    feature = "rand_core_0_10",
 )))]
 compile_error!(concat!(
     "rand_core_compat: activate the versions you need compatibility between:\n",
-    "`rand_core_0_5`, `rand_core_0_6`, `rand_core_0_9`",
+    "`rand_core_0_5`, `rand_core_0_6`, `rand_core_0_9`, `rand_core_0_10`",
 ));
 
 mod compat;
