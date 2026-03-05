@@ -161,3 +161,66 @@ mod v0_9 {
     {
     }
 }
+
+#[cfg(feature = "rand_core_0_10")]
+mod v0_10 {
+    use super::Rng06;
+    use super::TryRng06;
+    use core::convert::Infallible;
+
+    /// Implement the `rand_core 0.10`/`rand 0.10` RNG trait.
+    ///
+    /// This trait cannot fail and as such will convert failures in the
+    /// [`rand_core_0_6::RngCore::try_fill_bytes`] method to panics (by
+    /// directly calling the [`rand_core_0_6::RngCore::fill_bytes`] function.
+    impl<T: rand_core_0_6::RngCore> rand_core_0_10::TryRng for Rng06<T> {
+        type Error = Infallible;
+        fn try_next_u32(&mut self) -> Result<u32, Infallible> {
+            Ok(self.0.next_u32())
+        }
+        fn try_next_u64(&mut self) -> Result<u64, Infallible> {
+            Ok(self.0.next_u64())
+        }
+        fn try_fill_bytes(&mut self, dst: &mut [u8]) -> Result<(), Infallible> {
+            Ok(self.0.fill_bytes(dst))
+        }
+    }
+
+    /// Implement the `rand_core 0.10`/`rand 0.10` crypto RNG trait.
+    ///
+    /// Since the trait has the same shape, it forwards perfectly.
+    impl<T: rand_core_0_6::RngCore + rand_core_0_6::CryptoRng> rand_core_0_10::TryCryptoRng
+        for Rng06<T>
+    {
+    }
+
+    /// Implement the `rand_core 0.10`/`rand 0.10` fallible RNG trait.
+    ///
+    /// `try_next_u32`/`try_next_u64` are implemented in terms of
+    /// `try_fill_bytes` because the old version of the trait lacked the
+    /// fallible methods for `u32` and `u64`.
+    impl<T: rand_core_0_6::RngCore> rand_core_0_10::TryRng for TryRng06<T> {
+        type Error = rand_core_0_6::Error;
+        fn try_next_u32(&mut self) -> Result<u32, rand_core_0_6::Error> {
+            let mut buf = [0; 4];
+            self.try_fill_bytes(&mut buf)?;
+            Ok(u32::from_le_bytes(buf))
+        }
+        fn try_next_u64(&mut self) -> Result<u64, rand_core_0_6::Error> {
+            let mut buf = [0; 8];
+            self.try_fill_bytes(&mut buf)?;
+            Ok(u64::from_le_bytes(buf))
+        }
+        fn try_fill_bytes(&mut self, dst: &mut [u8]) -> Result<(), rand_core_0_6::Error> {
+            self.0.try_fill_bytes(dst)
+        }
+    }
+
+    /// Implement the `rand_core 0.10`/`rand 0.10` fallible crypto RNG trait.
+    ///
+    /// Since the trait has the same shape, it forwards perfectly.
+    impl<T: rand_core_0_6::RngCore + rand_core_0_6::CryptoRng> rand_core_0_10::TryCryptoRng
+        for TryRng06<T>
+    {
+    }
+}

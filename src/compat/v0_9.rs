@@ -193,3 +193,64 @@ mod v0_6 {
         }
     }
 }
+
+#[cfg(feature = "rand_core_0_10")]
+mod v0_10 {
+    use super::Rng09;
+    use super::TryRng09;
+    use core::convert::Infallible;
+    use core::error::Error;
+
+    /// Implement the `rand_core 0.10`/`rand 0.10` RNG trait.
+    ///
+    /// Since the trait has the same shape, it forwards perfectly.
+    impl<T: rand_core_0_9::RngCore> rand_core_0_10::TryRng for Rng09<T> {
+        type Error = Infallible;
+        fn try_next_u32(&mut self) -> Result<u32, Infallible> {
+            Ok(self.0.next_u32())
+        }
+        fn try_next_u64(&mut self) -> Result<u64, Infallible> {
+            Ok(self.0.next_u64())
+        }
+        fn try_fill_bytes(&mut self, dst: &mut [u8]) -> Result<(), Infallible> {
+            Ok(self.0.fill_bytes(dst))
+        }
+    }
+
+    /// Implement the `rand_core 0.10`/`rand 0.10` crypto RNG trait.
+    ///
+    /// Since the trait has the same shape, it forwards perfectly.
+    impl<T: rand_core_0_9::RngCore + rand_core_0_9::CryptoRng> rand_core_0_10::TryCryptoRng
+        for Rng09<T>
+    {
+    }
+
+    /// Implement the `rand_core 0.10`/`rand 0.10` fallible RNG trait.
+    ///
+    /// Since the trait has the same shape, it forwards perfectly.
+    impl<T: rand_core_0_9::TryRngCore> rand_core_0_10::TryRng for TryRng09<T>
+    where
+        T::Error: Error,
+    {
+        type Error = T::Error;
+        fn try_next_u32(&mut self) -> Result<u32, T::Error> {
+            self.0.try_next_u32()
+        }
+        fn try_next_u64(&mut self) -> Result<u64, T::Error> {
+            self.0.try_next_u64()
+        }
+        fn try_fill_bytes(&mut self, dst: &mut [u8]) -> Result<(), T::Error> {
+            self.0.try_fill_bytes(dst)
+        }
+    }
+
+    /// Implement the `rand_core 0.10`/`rand 0.10` fallible crypto RNG trait.
+    ///
+    /// Since the trait has the same shape, it forwards perfectly.
+    impl<T: rand_core_0_9::TryRngCore + rand_core_0_9::TryCryptoRng> rand_core_0_10::TryCryptoRng
+        for TryRng09<T>
+    where
+        T::Error: Error,
+    {
+    }
+}

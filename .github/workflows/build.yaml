@@ -11,6 +11,7 @@ jobs:
       matrix:
         rust:
           - 1.63
+          - 1.85
           - stable
           - nightly
     steps:
@@ -23,4 +24,7 @@ jobs:
           override: true
       - if: ${{ matrix.rust == 'stable' }}
         run: cargo fmt -- --color=always --check
-      - run: cargo build --all-features
+      - if: ${{ matrix.rust == '1.63' }}
+        run: cargo build --features=rand_core_0_5,rand_core_0_6,rand_core_0_9
+      - if: ${{ matrix.rust != '1.63' }}
+        run: cargo build --all-features

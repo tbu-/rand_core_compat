@@ -193,3 +193,53 @@ mod v0_6 {
         }
     }
 }
+
+#[cfg(feature = "rand_core_0_9")]
+mod v0_9 {
+    use super::Rng010;
+    use super::TryRng010;
+
+    /// Implement the `rand_core 0.9`/`rand 0.9` RNG trait.
+    ///
+    /// Since the trait has the same shape, it forwards perfectly.
+    impl<T: rand_core_0_10::Rng> rand_core_0_9::RngCore for Rng010<T> {
+        fn next_u32(&mut self) -> u32 {
+            self.0.next_u32()
+        }
+        fn next_u64(&mut self) -> u64 {
+            self.0.next_u64()
+        }
+        fn fill_bytes(&mut self, dst: &mut [u8]) {
+            self.0.fill_bytes(dst)
+        }
+    }
+
+    /// Implement the `rand_core 0.9`/`rand 0.9` crypto RNG trait.
+    ///
+    /// Since the trait has the same shape, it forwards perfectly.
+    impl<T: rand_core_0_10::Rng + rand_core_0_10::CryptoRng> rand_core_0_9::CryptoRng for Rng010<T> {}
+
+    /// Implement the `rand_core 0.9`/`rand 0.9` fallible RNG trait.
+    ///
+    /// Since the trait has the same shape, it forwards perfectly.
+    impl<T: rand_core_0_10::TryRng> rand_core_0_9::TryRngCore for TryRng010<T> {
+        type Error = T::Error;
+        fn try_next_u32(&mut self) -> Result<u32, T::Error> {
+            self.0.try_next_u32()
+        }
+        fn try_next_u64(&mut self) -> Result<u64, T::Error> {
+            self.0.try_next_u64()
+        }
+        fn try_fill_bytes(&mut self, dst: &mut [u8]) -> Result<(), T::Error> {
+            self.0.try_fill_bytes(dst)
+        }
+    }
+
+    /// Implement the `rand_core 0.9`/`rand 0.9` fallible crypto RNG trait.
+    ///
+    /// Since the trait has the same shape, it forwards perfectly.
+    impl<T: rand_core_0_10::TryRng + rand_core_0_10::TryCryptoRng> rand_core_0_9::TryCryptoRng
+        for TryRng010<T>
+    {
+    }
+}
